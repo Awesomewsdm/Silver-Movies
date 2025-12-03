@@ -1,0 +1,317 @@
+{
+  "info": {
+    "name": "Silver Movies API",
+    "_postman_id": "silver-movies-api-collection",
+    "description": "Postman collection for the Silver Movies API (Django DRF). Set `base_url` to your deployed URL and use the auth requests to populate tokens.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://silver-movies.onrender.com"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "tmdb_id",
+      "value": "500"
+    },
+    {
+      "key": "favorite_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health", ""]
+        }
+      }
+    },
+    {
+      "name": "Swagger/OpenAPI (docs)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/docs/?format=openapi",
+          "host": ["{{base_url}}"],
+          "path": ["api", "docs", ""],
+          "query": [
+            {
+              "key": "format",
+              "value": "openapi"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Register (create user + tokens)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"smoketest\",\n  \"email\": \"smoke@example.com\",\n  \"password\": \"Testpass123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/register/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "register", ""]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const data = pm.response.json();",
+              "if (data.access) pm.environment.set('access_token', data.access);",
+              "if (data.refresh) pm.environment.set('refresh_token', data.refresh);",
+              "pm.test('status is 201', () => pm.response.to.have.status(201));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Token Obtain (login)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"smoketest\",\n  \"password\": \"Testpass123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/token/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "token", ""]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const d = pm.response.json();",
+              "if (d.access) pm.environment.set('access_token', d.access);",
+              "if (d.refresh) pm.environment.set('refresh_token', d.refresh);",
+              "pm.test('got tokens', () => !!d.access && !!d.refresh);",
+              "pm.test('status is 200', () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Token Refresh",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/token/refresh/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "token", "refresh", ""]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const d = pm.response.json();",
+              "if (d.access) pm.environment.set('access_token', d.access);",
+              "pm.test('status is 200', () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Current User (me)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/auth/me/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "me", ""]
+        }
+      }
+    },
+    {
+      "name": "Trending (TMDb)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/movies/trending/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "movies", "trending", ""]
+        }
+      }
+    },
+    {
+      "name": "Recommendations (TMDb)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/movies/{{tmdb_id}}/recommendations/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "movies", "{{tmdb_id}}", "recommendations", ""]
+        }
+      }
+    },
+    {
+      "name": "List Favorites",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/favorites/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "favorites", ""]
+        }
+      }
+    },
+    {
+      "name": "Create Favorite",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tmdb_id\": {{tmdb_id}},\n  \"title\": \"Example Movie\",\n  \"metadata\": {\"poster_path\": \"/abc.jpg\"}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/favorites/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "favorites", ""]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const data = pm.response.json();",
+              "if (data.id) pm.environment.set('favorite_id', data.id);",
+              "pm.test('status is 201', () => pm.response.to.have.status(201));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Favorite",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/favorites/{{favorite_id}}/",
+          "host": ["{{base_url}}"],
+          "path": ["api", "favorites", "{{favorite_id}}", ""]
+        }
+      }
+    }
+  ]
+}

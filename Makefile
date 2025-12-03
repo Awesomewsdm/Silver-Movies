@@ -1,4 +1,4 @@
-PYTHON=python
+ZPYTHON=python
 COMPOSE=docker compose
 
 .PHONY: up migrate test e2e

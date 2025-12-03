@@ -81,3 +81,19 @@ Endpoints Overview
 - `GET /api/favorites/` — list favorites for current user (requires auth)
 - `POST /api/favorites/` — create favorite (requires auth)
 - `DELETE /api/favorites/<id>/` — remove favorite (requires auth)
+
+## Postman collection
+
+A ready-to-import Postman collection is included at `postman/silver-movies.postman_collection.json`.
+
+Quick import steps:
+
+1. Open Postman → File → Import → select `postman/silver-movies.postman_collection.json` from the repo.
+2. After import, edit the collection or environment variable `base_url` to `https://silver-movies.onrender.com` (or your deployed URL).
+3. Run the `Register` or `Token Obtain` request to populate `access_token` and `refresh_token`.
+4. Use requests that require auth (Favorites, Me) — Postman will use the saved `access_token` for requests that reference it.
+
+Notes:
+
+- The collection saves `access_token`, `refresh_token`, and `favorite_id` to the environment after the relevant requests. You can run the collection in the Runner to execute a smoke test sequence.
+- If you prefer a ready shell script for smoke checks, ask me and I will add one to the repo.
