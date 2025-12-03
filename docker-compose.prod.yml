@@ -1,0 +1,34 @@
+services:
+  web:
+    image: ${DOCKER_IMAGE:-your-dockerhub-username/silvermovies-web:latest}
+    restart: always
+    environment:
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
+      DJANGO_DEBUG: "False"
+      DATABASE_URL: "${DATABASE_URL}"
+      REDIS_URL: "${REDIS_URL}"
+      TMDB_API_KEY: "${TMDB_API_KEY}"
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost}"
+    ports:
+      - "8000:8000"
+    command: gunicorn project_nexus.wsgi:application -b 0.0.0.0:8000
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-silver_movies}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: always
+
+volumes:
+  db_data:
