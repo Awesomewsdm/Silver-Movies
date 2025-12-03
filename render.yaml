@@ -1,0 +1,41 @@
+# Render service manifest for the Silver Movies Django app
+# This file configures a Docker web service that uses the repository Dockerfile.
+# It includes a safe Release Command to run migrations and collectstatic on deploy.
+# IMPORTANT: Do NOT store secrets here. Set secret values in the Render dashboard's
+# Environment tab (or use Render's dashboard to provision a managed Postgres and
+# the DATABASE_URL will be available automatically).
+
+services:
+  - type: web
+    name: silver-movies
+    env: docker
+    branch: main
+    # Root directory for build (leave blank or "/" to use repo root)
+    rootDir: /
+    # Path to Dockerfile (relative to rootDir)
+    dockerfilePath: Dockerfile
+    # Start command left empty to use the image CMD defined in the Dockerfile
+    startCommand: ""
+    # Release command runs after the image is deployed but before the service is marked healthy.
+    # It is a good place to run Django migrations and collectstatic.
+    releaseCommand: "python project_nexus/manage.py migrate --noinput && python project_nexus/manage.py collectstatic --noinput"
+    # Health check path (adjust if your health endpoint differs)
+    healthCheckPath: /api/health/
+    # Environment variables (placeholders - set values in the Render UI, not here)
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        value: ""
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: TMDB_API_KEY
+        value: ""
+        # mark as secure in the UI
+      - key: ALLOWED_HOSTS
+        value: ""
+# Optional: if you want Render to provision a managed Postgres database, add
+# a `databases` section or create the database from the Render dashboard and
+# Render will expose `DATABASE_URL` to the service.
+#
+# databases:
+#   - name: silver-movies-db
+#     plan: starter

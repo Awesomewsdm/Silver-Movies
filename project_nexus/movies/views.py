@@ -9,6 +9,9 @@ from .serializers import UserSerializer, FavoriteMovieSerializer
 from django.conf import settings
 from django.core.cache import cache
 from .tmdb import TMDBClient
+import logging
+
+logger = logging.getLogger(__name__)
 
 class HealthCheckView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -59,6 +62,7 @@ class TrendingView(APIView):
         except RuntimeError as e:
             return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception:
+            logger.exception('Trending endpoint failed')
             return Response({'detail': 'Failed to fetch trending from TMDb'}, status=status.HTTP_502_BAD_GATEWAY)
 
 class RecommendationsView(APIView):
@@ -72,6 +76,7 @@ class RecommendationsView(APIView):
         except RuntimeError as e:
             return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception:
+            logger.exception('Recommendations endpoint failed for id %s', tmdb_id)
             return Response({'detail': 'Failed to fetch recommendations from TMDb'}, status=status.HTTP_502_BAD_GATEWAY)
 
 
