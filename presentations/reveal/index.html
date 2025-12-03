@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Silver Movies — Project Nexus</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/reveal.js@4/dist/reveal.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/reveal.js@4/dist/theme/white.css"
+      id="theme"
+    />
+    <style>
+      .erd {
+        width: 900px;
+        max-width: 90%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>Silver Movies — Project Nexus</h1>
+          <p>Movie recommendation API with TMDb integration</p>
+          <p><em>Presenter: &lt;Your Name&gt;</em></p>
+        </section>
+
+        <section>
+          <h2>Overview</h2>
+          <ul>
+            <li>Purpose: serve trending movies and recommendations</li>
+            <li>JWT auth, favorites, Redis caching</li>
+            <li>Django REST Framework + Docker</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Architecture</h2>
+          <p>
+            Django API -> Postgres (data) / Redis (cache) -> TMDb external API
+          </p>
+        </section>
+
+        <section>
+          <h2>ERD (Data Model)</h2>
+          <img
+            class="erd"
+            src="../../diagrams/silver_movies_erd.svg"
+            alt="ERD"
+          />
+        </section>
+
+        <section>
+          <h2>Key Endpoints</h2>
+          <ul>
+            <li><code>POST /api/auth/register/</code></li>
+            <li><code>GET /api/movies/trending/</code></li>
+            <li><code>GET /api/movies/{tmdb_id}/recommendations/</code></li>
+            <li>Favorites CRUD (auth required)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Deployment</h2>
+          <ul>
+            <li>Dockerized with Gunicorn</li>
+            <li>Render manifest included (`render.yaml`)</li>
+            <li>Env vars: `DATABASE_URL`, `TMDB_API_KEY`, `REDIS_URL`</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Next Steps</h2>
+          <ul>
+            <li>Celery for background tasks and cache warmups</li>
+            <li>Sentry for error monitoring</li>
+            <li>Improve test coverage and add CI E2E smoke tests</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Links</h2>
+          <ul>
+            <li>Repo: GitHub</li>
+            <li>
+              Postman:
+              <code>postman/silver-movies.postman_collection.json</code>
+            </li>
+            <li>ERD: <code>diagrams/silver_movies_erd.svg</code></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+      });
+    </script>
+  </body>
+</html>
